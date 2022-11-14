@@ -42,9 +42,7 @@ body {
   color: white;
 }
  
-{
-  background-image: url('');
-}
+
 
 
 </style>
@@ -79,14 +77,16 @@ body {
 <br>
 <br>
 <br>
+<h3>
 <table border =2>
   {% for user in userDetails %}
   <tr>
     <td> {{user[0]}} </td>
-    <td> {{user[1]}} </td>
+    <td> {{user[2]}} </td>
   </tr>
   {% endfor %}
 </table>
+</h3>
 </center>
 </body>
 </html>

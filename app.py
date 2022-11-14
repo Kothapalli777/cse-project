@@ -13,8 +13,8 @@ app.secret_key = 'your secret key'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Reddy@777'
-app.config['MYSQL_DB'] = 'testing'
+app.config['MYSQL_PASSWORD'] = 'Rakesh@214'
+app.config['MYSQL_DB'] = 'cseproj'
 
 mysql = MySQL(app)
 
@@ -62,7 +62,7 @@ def swapnap():
 
 @app.route('/login', methods =['GET', 'POST'])
 def login():
-	msg = ''
+	msg = 'Login Now'
 	if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
 		username = request.form['username']
 		password = request.form['password']
@@ -119,6 +119,10 @@ def users():
     if resultValue > 0:
         userDetails = cur.fetchall()
         return render_template('users.html',userDetails=userDetails)
+
+@app.errorhandler(404)
+def my_error_page(err):
+	return "<h1 style='color:red' allign:'center' font-family='Arial'>Page not Found, Thank you </h1>"
 
 if __name__=='__main__':
     app.run(debug=True)
