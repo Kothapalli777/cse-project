@@ -3,9 +3,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-import re
-
-
+import re,os
+from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 
@@ -13,14 +12,39 @@ app.secret_key = 'your secret key'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Rakesh@214'
-app.config['MYSQL_DB'] = 'cseproj'
+app.config['MYSQL_PASSWORD'] = 'Reddy@777'
+app.config['MYSQL_DB'] = 'testing'
 
 mysql = MySQL(app)
 
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+@app.route('/notes')
+def notes():
+    return render_template('notes.html')
+
+@app.route('/2ndyear')
+def secound():
+    return render_template('secound.html')
+             # 
+
+@app.route("/sucess",methods=['GET','POST'])
+def upload_file():                                       # This method is used to upload files 
+        if request.method == 'POST':
+                f = request.files['file']
+                print(f.filename)
+                #f.save(secure_filename(f.filename))
+                filename = secure_filename(f.filename)
+                f.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+                return redirect("/uploader")
+
+@app.route('/adminhome')
+def adminhome():
+    return render_template('adminhome.html')
+
 
 @app.route('/contact')
 def contactus():
@@ -58,11 +82,18 @@ def nagap():
 def swapnap():
     return render_template('swapnap.html')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/table')
+def table():
+    return render_template('table.html')
 
 
 @app.route('/login', methods =['GET', 'POST'])
 def login():
-	msg = 'Login Now'
+	msg = ''
 	if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
 		username = request.form['username']
 		password = request.form['password']
@@ -112,6 +143,25 @@ def register():
 		msg = 'Please fill out the form !'
 	return render_template('register.html', msg = msg)
 
+
+@app.route("/adminregister",methods=["GET","POST"])
+def admin_register():
+    if request.method == "POST":
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        secret_key = request.form['secret']
+        if secret_key == "12345":
+            #hashed_password = pbkdf2_sha256.hash(password)
+            cursor = mysql.connection.cursor()
+            cursor.execute("INSERT INTO admin(username,email,password,secret_key) VALUES(%s,%s,%s,%s)",(username,email,password,secret_key))
+            mysql.connection.commit()
+            return redirect(url_for("adminhome"))
+        else:
+            return render_template("adminregister.html",msg="Invlaid Secret")
+
+    return render_template("adminregister.html")
+
 @app.route('/users')
 def users():
     cur = mysql.connection.cursor()
@@ -119,10 +169,6 @@ def users():
     if resultValue > 0:
         userDetails = cur.fetchall()
         return render_template('users.html',userDetails=userDetails)
-
-@app.errorhandler(404)
-def my_error_page(err):
-	return "<h1 style='color:red' allign:'center' font-family='Arial'>Page not Found, Thank you </h1>"
 
 if __name__=='__main__':
     app.run(debug=True)
